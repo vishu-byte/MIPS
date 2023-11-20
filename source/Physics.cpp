@@ -354,12 +354,12 @@ void ParSim::Physics::ERM_Integrator1(ParSim::Particle &par, int step,
   par.omega += (Tau / (this->parameters[2])) * (this->parameters[8]) / 2;
 
   // For random active force -- use Fundamental Euler integration to update by
-  // half-step
+  // half step
   std::mt19937 mt(this->generator());
   std::normal_distribution<double> distribution(0.0, 1.0);
 
-  par.theta +=
-      pow(0.01 / 50, 0.5) * distribution(mt) * (this->parameters[8]/2.0); // rotational diffusion
+  par.theta += pow(0.01 / 50, 0.5) * distribution(mt) *
+               (this->parameters[8] / 2); // rotational diffusion
 
   // Error estimation in x and v
 }
@@ -389,6 +389,14 @@ void ParSim::Physics::ERM_Integrator2(ParSim::Particle &par, double L, int step,
   par.omega =
       par.omega_prev + (Tau / (this->parameters[2])) * (this->parameters[8]);
 
+  // For random active force -- use Fundamental Euler integration to update by
+  // half step
+  std::mt19937 mt(this->generator());
+  std::normal_distribution<double> distribution(0.0, 1.0);
+
+  par.theta += pow(0.01 / 50, 0.5) * distribution(mt) *
+               (this->parameters[8]/2); // rotational diffusion
+
   // Periodic boudary condition
 
   if (par.x > L / 2) {
@@ -402,15 +410,6 @@ void ParSim::Physics::ERM_Integrator2(ParSim::Particle &par, double L, int step,
   } else if (par.y < -L / 2) {
     par.y += L;
   }
-
-   // For random active force -- use Fundamental Euler integration to update by
-  // half-step
-  std::mt19937 mt(this->generator());
-  std::normal_distribution<double> distribution(0.0, 1.0);
-
-  par.theta +=
-      pow(0.01 / 50, 0.5) * distribution(mt) * (this->parameters[8]/2.0); // rotational diffusion
-
 }
 
 void ParSim ::Physics::Integrator(ParSim::ParticleSystem &parsym, int step,
