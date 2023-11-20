@@ -1,0 +1,3 @@
+source/.vscode/
+build*
+init_state.txt
