@@ -17,7 +17,7 @@ ParSim::Particle::Particle() { // default constructor
 }
 
 ParSim::Particle::Particle(int N, double phi, double L) {
- random_initialize(N, phi, L);
+  random_initialize(N, phi, L);
 }
 
 ParSim::Particle::Particle(double x_cor, double y_cor, double v_x, double v_y,
@@ -52,13 +52,13 @@ void ParSim::Particle::random_initialize(int N, double phi, double L) {
 
   // Generate random particle orientation (0 to 2pi) and omegas
   alpha = alpha_dist(rd);
-  omega = 2 * M_PI * omega_dist(rd);
+  omega = 0 * M_PI * omega_dist(rd);
 
   // Generate random V0
   vx_activity = 0 * vx_dist(rd);
   vy_activity = 0 * vy_dist(rd);
 
-  //Generate random theta
+  // Generate random theta
   theta = theta_dist(rd);
 
   // Generatoe random omega
