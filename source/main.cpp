@@ -20,11 +20,11 @@ int main() {
 
   /*Parameters*/
   /*Try to stick to S.I units to make sense out of numbers*/
-  int Number_of_particles = 1024;
+  int Number_of_particles = 200;
   int Number_of_time_steps = 1000;
 
   // temporary geometry variables
-  double L = 65.4934; // length of periodic boundary
+  double L = 28.9444; // length of periodic boundary
   double phi = M_PI * Number_of_particles / (L * L);
   ParSim::ParticleSystem parsym(Number_of_particles,
                                 L); // create a simple system
