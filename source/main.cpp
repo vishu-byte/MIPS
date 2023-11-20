@@ -25,7 +25,7 @@ int main() {
 
   // temporary geometry variables
   double L = 65.4934; // length of periodic boundary
-  double phi = M_PI*Number_of_particles/(L*L);
+  double phi = M_PI * Number_of_particles / (L * L);
   ParSim::ParticleSystem parsym(Number_of_particles,
                                 L); // create a simple system
   ParSim::Physics physics;
@@ -34,22 +34,22 @@ int main() {
       parsym.get_particles(); // get access to particles
 
   /*Setting physics parameters -- all game to be played here */
-  physics.parameters[8] = 0.01;           // time step
-  physics.parameters[0] = 500;            // k
-  physics.parameters[1] = 1;               // interaction_radius sigma
-  physics.parameters[2] = 1;               // mass
-  physics.parameters[3] = 1;               // radius
-  physics.parameters[4] = 0.0;             // mu
-  physics.parameters[5] = 0.0;             // gamma
+  physics.parameters[8] = 0.01;       // time step
+  physics.parameters[0] = 500;        // k
+  physics.parameters[1] = 2;          // interaction_diameter sigma
+  physics.parameters[2] = 1;          // mass
+  physics.parameters[3] = 1;          // radius
+  physics.parameters[5] = 0.0;        // gamma
+  physics.parameters[10] = 0.01;      // V0 --- active velocity
+  physics.parameters[11] = physics.parameters[10]/50.0; // Dr  -- rotational diffusion
+  
+  physics.parameters[4] = 0.0;        // mu
+
   physics.parameters[6] = 0.00000001;      // epsilon1  -- softening length
   physics.parameters[7] = M_PI / 10000000; // epsilon2 -- softening omega
   physics.parameters[9] = 0.5 * physics.parameters[5] /
                           pow((physics.parameters[2] * physics.parameters[0]),
                               0.5); // zeta
-
-  physics.parameters[10] =
-      50; // eta      --increase judiciuosly, it should not overpower k
-  physics.parameters[11] = 0; // Diffusion constant
 
   /* 2)Reading initial state*/
 

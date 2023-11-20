@@ -164,12 +164,14 @@ void ParSim::Physics::Force_PP_PBC(ParSim::ParticleSystem &ps,
     ps.particle_array[i].force_radial[0] +=
         -1 * (this->parameters[5]) * ps.particle_array[i].vx +
         ps.particle_array[i].vx_activity +
-        (0.01 / this->parameters[5]) * cos(ps.particle_array[i].theta);
+        (this->parameters[10] / this->parameters[5]) *
+            cos(ps.particle_array[i].theta);
 
     ps.particle_array[i].force_radial[1] +=
         -1 * (this->parameters[5]) * ps.particle_array[i].vy +
         ps.particle_array[i].vy_activity +
-        (0.01 / this->parameters[5]) * sin(ps.particle_array[i].theta);
+        (this->parameters[10] / this->parameters[5]) *
+            sin(ps.particle_array[i].theta);
 
     ps.particle_array[i].torque +=
         -1 * (this->parameters[5]) * ps.particle_array[i].omega +
@@ -329,7 +331,7 @@ void ParSim::Physics::ERM_Integrator1(ParSim::Particle &par, int step,
   double Tau;
   // Total force and torque on this particle
   Fx = par.force_radial[0] + par.force_tangential[0];
-  Fy = par.force_radial[1] + par.force_tangential[1]; // -g newton, m = 1
+  Fy = par.force_radial[1] + par.force_tangential[1]; //
   // log << "Ftangential: " << par.force_tangential[1] << std::endl;
   Tau = par.torque;
 
@@ -358,7 +360,7 @@ void ParSim::Physics::ERM_Integrator1(ParSim::Particle &par, int step,
   std::mt19937 mt(this->generator());
   std::normal_distribution<double> distribution(0.0, 1.0);
 
-  par.theta += pow(0.01 / 50, 0.5) * distribution(mt) *
+  par.theta += pow(this->parameters[11], 0.5) * distribution(mt) *
                (this->parameters[8] / 2); // rotational diffusion
 
   // Error estimation in x and v
@@ -372,7 +374,7 @@ void ParSim::Physics::ERM_Integrator2(ParSim::Particle &par, double L, int step,
   double Tau;
   // Total force (F') and torque (Tau') on this particle
   Fx = par.force_radial[0] + par.force_tangential[0];
-  Fy = par.force_radial[1] + par.force_tangential[1]; // -g newton, m = 1
+  Fy = par.force_radial[1] + par.force_tangential[1];
   // log << "Ftangential: " << par.force_tangential[1] << std::endl;
   Tau = par.torque;
 
@@ -394,8 +396,8 @@ void ParSim::Physics::ERM_Integrator2(ParSim::Particle &par, double L, int step,
   std::mt19937 mt(this->generator());
   std::normal_distribution<double> distribution(0.0, 1.0);
 
-  par.theta += pow(0.01 / 50, 0.5) * distribution(mt) *
-               (this->parameters[8]/2); // rotational diffusion
+  par.theta += pow(this->parameters[11], 0.5) * distribution(mt) *
+               (this->parameters[8] / 2); // rotational diffusion
 
   // Periodic boudary condition
 
