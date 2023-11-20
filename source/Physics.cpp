@@ -135,9 +135,6 @@ void ParSim::Physics::Force_PP(ParSim::ParticleSystem &ps, std::ofstream &log) {
 void ParSim::Physics::Force_PP_PBC(ParSim::ParticleSystem &ps,
                                    std::ofstream &log) {
 
-  // For random force
-  std::mt19937 mt(this->generator());
-  std::normal_distribution<double> distribution(0.0, 0.3333);
   // Loop1: through all particles
   for (int i = 0; i < ps.no_of_particles; ++i) {
 
@@ -167,12 +164,12 @@ void ParSim::Physics::Force_PP_PBC(ParSim::ParticleSystem &ps,
     ps.particle_array[i].force_radial[0] +=
         -1 * (this->parameters[5]) * ps.particle_array[i].vx +
         ps.particle_array[i].vx_activity +
-        (sqrt(this->parameters[11])) * distribution(mt);
+        (0.01 / this->parameters[5]) * cos(ps.particle_array[i].theta);
 
     ps.particle_array[i].force_radial[1] +=
         -1 * (this->parameters[5]) * ps.particle_array[i].vy +
         ps.particle_array[i].vy_activity +
-        (sqrt( this->parameters[11])) * distribution(mt);
+        (0.01 / this->parameters[5]) * sin(ps.particle_array[i].theta);
 
     ps.particle_array[i].torque +=
         -1 * (this->parameters[5]) * ps.particle_array[i].omega +
@@ -356,6 +353,14 @@ void ParSim::Physics::ERM_Integrator1(ParSim::Particle &par, int step,
   par.alpha += par.omega * (this->parameters[8]) / 2;
   par.omega += (Tau / (this->parameters[2])) * (this->parameters[8]) / 2;
 
+  // For random active force -- use Fundamental Euler integration to update by
+  // half-step
+  std::mt19937 mt(this->generator());
+  std::normal_distribution<double> distribution(0.0, 1.0);
+
+  par.theta +=
+      pow(0.01 / 50, 0.5) * distribution(mt) * (this->parameters[8]/2.0); // rotational diffusion
+
   // Error estimation in x and v
 }
 
@@ -386,8 +391,6 @@ void ParSim::Physics::ERM_Integrator2(ParSim::Particle &par, double L, int step,
 
   // Periodic boudary condition
 
-  
-
   if (par.x > L / 2) {
     par.x -= L;
   } else if (par.x < -L / 2) {
@@ -399,6 +402,15 @@ void ParSim::Physics::ERM_Integrator2(ParSim::Particle &par, double L, int step,
   } else if (par.y < -L / 2) {
     par.y += L;
   }
+
+   // For random active force -- use Fundamental Euler integration to update by
+  // half-step
+  std::mt19937 mt(this->generator());
+  std::normal_distribution<double> distribution(0.0, 1.0);
+
+  par.theta +=
+      pow(0.01 / 50, 0.5) * distribution(mt) * (this->parameters[8]/2.0); // rotational diffusion
+
 }
 
 void ParSim ::Physics::Integrator(ParSim::ParticleSystem &parsym, int step,
