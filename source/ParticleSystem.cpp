@@ -39,6 +39,7 @@ void ParSim::Particle::random_initialize(int N, double phi, double L) {
   std::uniform_real_distribution<double> vx_dist(-1, 1);
   std::uniform_real_distribution<double> vy_dist(-1, 1);
   std::uniform_real_distribution<double> alpha_dist(-1, 1);
+  std::uniform_real_distribution<double> theta_dist(-1, 1);
   std::uniform_real_distribution<double> omega_dist(-1, 1);
 
   x = 1 * (L / 2) * x_coordinate(rd);
@@ -56,6 +57,9 @@ void ParSim::Particle::random_initialize(int N, double phi, double L) {
   // Generate random V0
   vx_activity = 0 * vx_dist(rd);
   vy_activity = 0 * vy_dist(rd);
+
+  //Generate random theta
+  theta = theta_dist(rd);
 
   // Generatoe random omega
   omega_activity = 0 * M_PI * omega_dist(rd);
