@@ -21,7 +21,7 @@ int main() {
   /*Parameters*/
   /*Try to stick to S.I units to make sense out of numbers*/
   int Number_of_particles = 1024;
-  int Number_of_time_steps = 100;
+  int Number_of_time_steps = 1000;
 
   // temporary geometry variables
   double L = 65.4934; // length of periodic boundary
@@ -34,16 +34,17 @@ int main() {
       parsym.get_particles(); // get access to particles
 
   /*Setting physics parameters -- all game to be played here */
-  physics.parameters[8] = 0.01;       // time step
-  physics.parameters[0] = 500;        // k
-  physics.parameters[1] = 2;          // interaction_diameter sigma
-  physics.parameters[2] = 1;          // mass
-  physics.parameters[3] = 1;          // radius
-  physics.parameters[5] = 0.0;        // gamma
-  physics.parameters[10] = 0.01;      // V0 --- active velocity
-  physics.parameters[11] = physics.parameters[10]/50.0; // Dr  -- rotational diffusion
-  
-  physics.parameters[4] = 0.0;        // mu
+  physics.parameters[8] = 0.1;   // time step
+  physics.parameters[0] = 1;     // k
+  physics.parameters[1] = 2;     // interaction_diameter sigma
+  physics.parameters[2] = 0.1;   // mass
+  physics.parameters[3] = 1;     // radius
+  physics.parameters[5] = 1;     // gamma
+  physics.parameters[10] = 0.01; // V0 --- active velocity
+  physics.parameters[11] =
+      physics.parameters[10] / 50.0; // Dr  -- rotational diffusion
+
+  physics.parameters[4] = 0.0; // mu
 
   physics.parameters[6] = 0.00000001;      // epsilon1  -- softening length
   physics.parameters[7] = M_PI / 10000000; // epsilon2 -- softening omega
