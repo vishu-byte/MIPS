@@ -147,13 +147,13 @@ void ParSim::Physics::Force_PP_PBC(ParSim::ParticleSystem &ps) {
     ps.particle_array[i].force_radial[0] +=
         -1 * (this->parameters[5]) * ps.particle_array[i].vx +
         ps.particle_array[i].vx_activity +
-        (this->parameters[10] / this->parameters[5]) *
+        (this->parameters[10] / (this->parameters[5] + this->parameters[6])) *
             cos(ps.particle_array[i].theta);
 
     ps.particle_array[i].force_radial[1] +=
         -1 * (this->parameters[5]) * ps.particle_array[i].vy +
         ps.particle_array[i].vy_activity +
-        (this->parameters[10] / this->parameters[5]) *
+        (this->parameters[10] / (this->parameters[5] + this->parameters[6])) *
             sin(ps.particle_array[i].theta);
 
     ps.particle_array[i].torque +=
