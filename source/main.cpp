@@ -21,7 +21,7 @@ int main() {
   /*Parameters*/
   /*Try to stick to S.I units to make sense out of numbers*/
   int Number_of_particles = 200;
-  int Number_of_time_steps = 1000;
+  int Number_of_time_steps = 500;
 
   // temporary geometry variables
   double L = 28.9444; // length of periodic boundary
@@ -101,19 +101,19 @@ int main() {
     // writing data of this state to file (will be used for rendering the
     // system in ovito), write every nth state
 
-    if (step % 100 == 0) {
-      data_output << Number_of_particles << std::endl;
-      data_output << "Lattice="
-                  << "\"10.0 0.0 0.0 0.0 10.0 0.0 0.0 0.0 0.0\"" << std::endl;
-      // first store current configuration
-      for (int i = 0; i < parsym.no_of_particles; ++i) {
-        data_output << particle[i].x << ' ' << particle[i].y << ' ' << 0 << ' '
-                    << cos(particle[i].alpha) << ' ' << sin(particle[i].alpha)
-                    << ' ' << 0 << ' ' << particle[i].alpha << ' '
-                    << particle[i].vx << ' ' << particle[i].vy << ' '
-                    << particle[i].omega << ' ' << std::endl;
-      }
-    }
+    // if (step % 100 == 0) {
+    //   data_output << Number_of_particles << std::endl;
+    //   data_output << "Lattice="
+    //               << "\"10.0 0.0 0.0 0.0 10.0 0.0 0.0 0.0 0.0\"" << std::endl;
+    //   // first store current configuration
+    //   for (int i = 0; i < parsym.no_of_particles; ++i) {
+    //     data_output << particle[i].x << ' ' << particle[i].y << ' ' << 0 << ' '
+    //                 << cos(particle[i].alpha) << ' ' << sin(particle[i].alpha)
+    //                 << ' ' << 0 << ' ' << particle[i].alpha << ' '
+    //                 << particle[i].vx << ' ' << particle[i].vy << ' '
+    //                 << particle[i].omega << ' ' << std::endl;
+    //   }
+    // }
 
     if (step % 50 == 0) {
       std ::cout << "----------Step count: " << step << std::endl;
@@ -122,7 +122,7 @@ int main() {
     log << "----------Step count: " << step << std::endl;
 
     // Manipulate particle positions for next iteration.
-    physics.evolve_system_ERM(parsym, step, log);
+    physics.evolve_system_ERM(parsym, step);
   }
 
   time_t end = time(&end);
