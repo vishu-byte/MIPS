@@ -124,8 +124,6 @@ void ParSim::Physics::Force_PP_PBC(ParSim::ParticleSystem &ps) {
   // Loop1: through all particles
   for (int i = 0; i < ps.no_of_particles; ++i) {
 
-    
-
     // Store previous step forces
     ps.particle_array[i].force_radial_prev[0] =
         ps.particle_array[i].force_radial[0];
@@ -144,8 +142,7 @@ void ParSim::Physics::Force_PP_PBC(ParSim::ParticleSystem &ps) {
     ps.particle_array[i].force_tangential[1] = 0;
     ps.particle_array[i].torque = 0;
 
-    // Unary force of damping. Always there. Translational and Rotational
-    // activities added.
+    // Unary forces.
 
     ps.particle_array[i].force_radial[0] +=
         -1 * (this->parameters[5]) * ps.particle_array[i].vx +
@@ -163,7 +160,7 @@ void ParSim::Physics::Force_PP_PBC(ParSim::ParticleSystem &ps) {
         -1 * (this->parameters[5]) * ps.particle_array[i].omega +
         ps.particle_array[i].omega_activity;
 
-    // Knary force calculation --- Loop2: through all particles
+    // Nnary force calculation --- Loop2: through all particles
     for (int j = 0; j < ps.no_of_particles; ++j) {
       if (j == i) { // no self coupling
         continue;
@@ -332,8 +329,6 @@ void ParSim::Physics::ERM_Integrator1(ParSim::Particle &par, int step) {
 
   par.theta += pow(this->parameters[11], 0.5) * distribution(mt) *
                (this->parameters[8] / 2); // rotational diffusion
-
-  // Error estimation in x and v
 }
 
 void ParSim::Physics::ERM_Integrator2(ParSim::Particle &par, double L, int step) {
@@ -421,23 +416,10 @@ void ParSim::Physics::evolve_system_ERM(ParticleSystem &parsym, int step) {
   // iii) Again calculate force (F') from x',v' ------
   Force_PP_PBC(parsym);
 
-  // error tolerance condition ----
-
   //  iv) Update x',v' to xnew, vnew --------
   for (int i = 0; i < parsym.no_of_particles; ++i) {
     ERM_Integrator2(parsym.particle_array[i], parsym.L, step);
   }
-
-  // v)Change delt t
-  // this->parameters[8] = 0.9;
-
-  // vi) boundary conditions
-
-  // if (parsym.particle_array[i].x < -1000 ||
-  //     parsym.particle_array[i].x > 1000 ||
-  //     parsym.particle_array[i].y < -800 || parsym.particle_array[i].y >
-  //     800)
-  //   parsym.particle_array[i].random_initialize();
 }
 
 std::vector<double> ParSim::Physics::EnergyMomentum(ParticleSystem &parsym) {

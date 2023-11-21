@@ -36,7 +36,7 @@ int main() {
   /*Setting physics parameters -- all game to be played here */
   physics.parameters[8] = 0.1;   // time step
   physics.parameters[0] = 1;     // k
-  physics.parameters[1] = 2;     // interaction_diameter sigma
+  physics.parameters[1] = 1;     // interaction_diameter sigma
   physics.parameters[2] = 0.1;   // mass
   physics.parameters[3] = 1;     // radius
   physics.parameters[5] = 1;     // gamma
@@ -101,25 +101,26 @@ int main() {
     // writing data of this state to file (will be used for rendering the
     // system in ovito), write every nth state
 
-    // if (step % 100 == 0) {
-    //   data_output << Number_of_particles << std::endl;
-    //   data_output << "Lattice="
-    //               << "\"10.0 0.0 0.0 0.0 10.0 0.0 0.0 0.0 0.0\"" << std::endl;
-    //   // first store current configuration
-    //   for (int i = 0; i < parsym.no_of_particles; ++i) {
-    //     data_output << particle[i].x << ' ' << particle[i].y << ' ' << 0 << ' '
-    //                 << cos(particle[i].alpha) << ' ' << sin(particle[i].alpha)
-    //                 << ' ' << 0 << ' ' << particle[i].alpha << ' '
-    //                 << particle[i].vx << ' ' << particle[i].vy << ' '
-    //                 << particle[i].omega << ' ' << std::endl;
-    //   }
-    // }
-
-    if (step % 50 == 0) {
-      std ::cout << "----------Step count: " << step << std::endl;
+    if (step % 100 == 0) {
+      data_output << Number_of_particles << std::endl;
+      data_output << "Lattice="
+                  << "\"10.0 0.0 0.0 0.0 10.0 0.0 0.0 0.0 0.0\"" << std::endl;
+      // first store current configuration
+      for (int i = 0; i < parsym.no_of_particles; ++i) {
+        data_output << particle[i].x << ' ' << particle[i].y << ' ' << 0 << ' '
+                    << cos(particle[i].alpha) << ' ' << sin(particle[i].alpha)
+                    << ' ' << 0 << ' ' << particle[i].alpha << ' '
+                    << particle[i].vx << ' ' << particle[i].vy << ' '
+                    << particle[i].omega << ' ' << std::endl;
+      }
     }
 
-    log << "----------Step count: " << step << std::endl;
+    if (step % 100 == 0) {
+      std ::cout << "----------Step count: " << step << std::endl;
+         log << "----------Step count: " << step << std::endl;
+    }
+
+   
 
     // Manipulate particle positions for next iteration.
     physics.evolve_system_ERM(parsym, step);
