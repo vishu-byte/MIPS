@@ -20,15 +20,15 @@ int main() {
 
   /*Parameters*/
   /*Try to stick to S.I units to make sense out of numbers*/
-  int Number_of_particles = 5;
-  int Number_of_time_steps = 10000;
+  int Number_of_particles = 784;
+  int Number_of_time_steps = 1000;
 
   // Mips parameters
-  double phi = 0.5; // length of periodic boundary
-  double L = sqrt(M_PI * Number_of_particles / (phi * phi));
+  double phi = 0.5; // packing fraction
+  double L = sqrt(M_PI * Number_of_particles / (phi));   //periodic boundary length
   double Pecr = 0.01; // rotational Peclet number
 
-  ParSim::ParticleSystem parsym(Number_of_particles,
+  ParSim::ParticleSystem parsym(Number_of_particles, phi,
                                 L); // create a simple system
   ParSim::Physics physics;
 
@@ -40,13 +40,14 @@ int main() {
   physics.parameters[0] = 1;     // k
   physics.parameters[1] = 2;     // interaction_diameter sigma
   physics.parameters[2] = 0.1;   // mass
-  physics.parameters[3] = 1;     // radius
   physics.parameters[5] = 1;     // gamma
   physics.parameters[10] = 0.01; // V0 --- active velocity
   physics.parameters[11] =
       physics.parameters[10] / Pecr; // Dr  -- rotational diffusion
 
+  /*---obsolete params---*/
   physics.parameters[4] = 0.0; // mu
+  physics.parameters[3] = 1;   // radius
 
   physics.parameters[6] = 0.00000001;      // epsilon1  -- softening length
   physics.parameters[7] = M_PI / 10000000; // epsilon2 -- softening omega
@@ -98,7 +99,7 @@ int main() {
     // writing data of this state to file (will be used for rendering the
     // system in ovito), write every nth state
 
-    if (step % 10 == 0) {
+    if (step % 100 == 0) {
       data_output << Number_of_particles << std::endl;
       data_output << "Lattice="
                   << "\"10.0 0.0 0.0 0.0 10.0 0.0 0.0 0.0 0.0\"" << std::endl;

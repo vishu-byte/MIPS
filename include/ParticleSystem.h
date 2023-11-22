@@ -5,7 +5,6 @@
 #ifndef PARTICLE_SIMULATION_PARTICLE_SYSTEM_H
 #define PARTICLE_SIMULATION_PARTICLE_SYSTEM_H
 
-
 #include <cmath>
 #include <math.h>
 #include <random>
@@ -49,23 +48,22 @@ public:
            double orientation);                 // parameterized constructor
   virtual ~Particle(){};                        // virtual destructor
   void random_initialize(int, double, double);  // randomly initializes particle
-
-
+  void Lattice_initialize(int, double, double); // lattice initializes particle
 };
 
 class ParticleSystem {
 public:
   int no_of_particles;
-  int n;    //no. of particles in a row
+  int n; // no. of particles in a row
   double L;
   double phi;
 
   std::vector<double> lattice_grid{0, 0};
   Particle *particle_array{nullptr}; // creating particle array on heap
 
-
-  ParticleSystem(int, double); //constructor
-  virtual ~ParticleSystem();           // destructor
+  ParticleSystem(int, double, double);              // constructor
+  ParticleSystem(int, int, double, double); // parameterized constructor
+  virtual ~ParticleSystem();                // destructor
   Particle *const get_particles(); // constant pointer, can not change address
                                    // of memory block to which it points
   double distance(Particle par1, Particle par2);
@@ -82,7 +80,6 @@ public:
 
 public:
   Boxresize(){};
-
 };
 
 } // namespace ParSim
