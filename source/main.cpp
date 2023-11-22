@@ -10,7 +10,7 @@
 
 void state_before_simulation(std::ofstream &log, ParSim::ParticleSystem &parsym,
                              ParSim ::Physics &physics, int steps,
-                             double dimension, double phi);
+                             double dimension, double phi, double Pecr);
 void state_after_simulation(std::ofstream &log, ParSim::ParticleSystem &parsym,
                             ParSim ::Physics &physics);
 
@@ -20,13 +20,14 @@ int main() {
 
   /*Parameters*/
   /*Try to stick to S.I units to make sense out of numbers*/
-  int Number_of_particles = 20;
-  int Number_of_time_steps = 1000;
+  int Number_of_particles = 5;
+  int Number_of_time_steps = 10000;
 
-  // temporary geometry variables
+  // Mips parameters
   double phi = 0.5; // length of periodic boundary
-  double L = sqrt(M_PI * Number_of_particles / (L * L));
-  
+  double L = sqrt(M_PI * Number_of_particles / (phi * phi));
+  double Pecr = 0.01; // rotational Peclet number
+
   ParSim::ParticleSystem parsym(Number_of_particles,
                                 L); // create a simple system
   ParSim::Physics physics;
@@ -37,13 +38,13 @@ int main() {
   /*Setting physics parameters -- all game to be played here */
   physics.parameters[8] = 0.1;   // time step
   physics.parameters[0] = 1;     // k
-  physics.parameters[1] = 1;     // interaction_diameter sigma
+  physics.parameters[1] = 2;     // interaction_diameter sigma
   physics.parameters[2] = 0.1;   // mass
   physics.parameters[3] = 1;     // radius
   physics.parameters[5] = 1;     // gamma
   physics.parameters[10] = 0.01; // V0 --- active velocity
   physics.parameters[11] =
-      physics.parameters[10] / 50.0; // Dr  -- rotational diffusion
+      physics.parameters[10] / Pecr; // Dr  -- rotational diffusion
 
   physics.parameters[4] = 0.0; // mu
 
@@ -63,15 +64,16 @@ int main() {
   //   exit(1);
   // }
 
-  // while (input_state >> particle[i].x >> particle[i].y >> particle[i].alpha >>
+  // while (input_state >> particle[i].x >> particle[i].y >> particle[i].alpha
+  // >>
   //        particle[i].vx >> particle[i].vy) {
   //   i++;
   // }
 
-  // std::cout << "Input state read for " << i << " particles ..." << std ::endl;
+  // std::cout << "Input state read for " << i << " particles ..." << std
+  // ::endl;
 
   // input_state.close();
-
 
   // 3)Creating a data file for storage and log-----------
 
@@ -82,7 +84,8 @@ int main() {
   log.open("log.txt");
 
   // Print the state before the simulation in log
-  state_before_simulation(log, parsym, physics, Number_of_time_steps, L, phi);
+  state_before_simulation(log, parsym, physics, Number_of_time_steps, L, phi,
+                          Pecr);
 
   log << "-x-x-x-x-x-Simulation initiated-x-x-x-x-x- " << std::endl;
   std::cout << "-x-x-x-x-x-Simulation initiated-x-x-x-x-x- " << std::endl;
@@ -111,7 +114,7 @@ int main() {
 
     if (step % 100 == 0) {
       std ::cout << "----------Step count: " << step << std::endl;
-         log << "----------Step count: " << step << std::endl;
+      log << "----------Step count: " << step << std::endl;
     }
 
     // Manipulate particle positions for next iteration.
@@ -136,7 +139,7 @@ int main() {
 
 void state_before_simulation(std::ofstream &log, ParSim::ParticleSystem &parsym,
                              ParSim ::Physics &physics, int steps,
-                             double dimension, double phi) {
+                             double dimension, double phi, double Pecr) {
 
   ParSim::Particle *const particle =
       parsym.get_particles(); // get access to paticles
@@ -145,20 +148,15 @@ void state_before_simulation(std::ofstream &log, ParSim::ParticleSystem &parsym,
   log << "Number of particles: " << parsym.no_of_particles << std::endl
       << "Time step: " << physics.parameters[8] << std::endl
       << "Number of time steps: " << steps << std::endl
-      << "spacing: " << phi << std::endl
       << "Dimension: " << dimension << std::endl
+      << "phi: " << phi << std::endl
+      << "Pecr: " << Pecr << std::endl
       << "k: " << physics.parameters[0] << std::endl
-      << "Interaction radius (sigma): " << physics.parameters[1] << std::endl
-      << "Radius (r) : " << physics.parameters[3] << std::endl
+      << "Interaction diameter (sigma): " << physics.parameters[1] << std::endl
       << "Mass (m): " << physics.parameters[2] << std::endl
-      << "mu: " << physics.parameters[4] << std::endl
       << "gamma: " << physics.parameters[5] << std::endl
-      << "zeta: " << physics.parameters[9] << std::endl
-      << "eta: " << physics.parameters[10] << std::endl
-      << "D: " << physics.parameters[11] << std::endl
-      << "epsilon1 " << physics.parameters[6] << std::endl
-      << "epsilon2 " << physics.parameters[7] << std::endl
-      << "seed " << physics.parameters[7] << std::endl;
+      << "VO: " << physics.parameters[10] << std::endl
+      << "Dr: " << physics.parameters[11] << std::endl;
 
   log << "Energy-momentum before the collision: " << std::endl;
   log << "Total Energy: "

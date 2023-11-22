@@ -47,8 +47,8 @@ void ParSim::Particle::random_initialize(int N, double phi, double L) {
 
   // Generate random particle speed. Speed is squared causing
   // particle distribution to be exponential instead of linear.
-  vx = 0.01 * vx_dist(rd);
-  vy = 0.01 * vy_dist(rd);
+  vx = 0 * vx_dist(rd);
+  vy = 0 * vy_dist(rd);
 
   // Generate random particle orientation (0 to 2pi) and omegas
   alpha = alpha_dist(rd);
@@ -59,7 +59,7 @@ void ParSim::Particle::random_initialize(int N, double phi, double L) {
   vy_activity = 0 * vy_dist(rd);
 
   // Generate random theta
-  theta = theta_dist(rd);
+  theta = 2*M_PI*theta_dist(rd);
 
   // Generatoe random omega
   omega_activity = 0 * M_PI * omega_dist(rd);
