@@ -20,12 +20,13 @@ int main() {
 
   /*Parameters*/
   /*Try to stick to S.I units to make sense out of numbers*/
-  int Number_of_particles = 200;
-  int Number_of_time_steps = 500;
+  int Number_of_particles = 20;
+  int Number_of_time_steps = 1000;
 
   // temporary geometry variables
-  double L = 28.9444; // length of periodic boundary
-  double phi = M_PI * Number_of_particles / (L * L);
+  double phi = 0.5; // length of periodic boundary
+  double L = sqrt(M_PI * Number_of_particles / (L * L));
+  
   ParSim::ParticleSystem parsym(Number_of_particles,
                                 L); // create a simple system
   ParSim::Physics physics;
@@ -54,30 +55,23 @@ int main() {
 
   /* 2)Reading initial state*/
 
-  std::ifstream input_state("init_state.txt");
-  int i = 0;
+  // std::ifstream input_state("init_state.txt");
+  // int i = 0;
 
-  if (!input_state) { // file couldn't be opened
-    std::cerr << "Error: Init_state file could not be opened" << std::endl;
-    exit(1);
-  }
+  // if (!input_state) { // file couldn't be opened
+  //   std::cerr << "Error: Init_state file could not be opened" << std::endl;
+  //   exit(1);
+  // }
 
-  while (input_state >> particle[i].x >> particle[i].y >> particle[i].alpha >>
-         particle[i].vx >> particle[i].vy) {
-    i++;
-  }
+  // while (input_state >> particle[i].x >> particle[i].y >> particle[i].alpha >>
+  //        particle[i].vx >> particle[i].vy) {
+  //   i++;
+  // }
 
-  std::cout << "Input state read for " << i << " particles ..." << std ::endl;
+  // std::cout << "Input state read for " << i << " particles ..." << std ::endl;
 
-  input_state.close();
+  // input_state.close();
 
-  //   checking
-  //   for (int i = 0; i < parsym.no_of_particles; ++i) {
-  //     std::cout << particle[i].x << ' ' << particle[i].y << ' '
-  //               << particle[i].alpha << ' ' << particle[i].vx << ' '
-  //               << particle[i].vy << ' ' << particle[i].omega << ' ' <<
-  //               std::endl;
-  //   }
 
   // 3)Creating a data file for storage and log-----------
 
@@ -101,7 +95,7 @@ int main() {
     // writing data of this state to file (will be used for rendering the
     // system in ovito), write every nth state
 
-    if (step % 100 == 0) {
+    if (step % 10 == 0) {
       data_output << Number_of_particles << std::endl;
       data_output << "Lattice="
                   << "\"10.0 0.0 0.0 0.0 10.0 0.0 0.0 0.0 0.0\"" << std::endl;
@@ -119,8 +113,6 @@ int main() {
       std ::cout << "----------Step count: " << step << std::endl;
          log << "----------Step count: " << step << std::endl;
     }
-
-   
 
     // Manipulate particle positions for next iteration.
     physics.evolve_system_ERM(parsym, step);
