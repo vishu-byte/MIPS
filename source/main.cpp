@@ -21,12 +21,12 @@ int main() {
   /*Parameters*/
   /*Try to stick to S.I units to make sense out of numbers*/
   int Number_of_particles = 784;
-  int Number_of_time_steps = 1000;
+  int Number_of_time_steps = 200000;
 
   // Mips parameters
   double phi = 0.5; // packing fraction
   double L = sqrt(M_PI * Number_of_particles / (phi));   //periodic boundary length
-  double Pecr = 0.01; // rotational Peclet number
+  double Pecr = 50; // rotational Peclet number
 
   ParSim::ParticleSystem parsym(Number_of_particles, phi,
                                 L); // create a simple system
