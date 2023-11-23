@@ -61,7 +61,6 @@ void ParSim::Physics::Force_PP(ParSim::ParticleSystem &ps) {
       if (j == i) { // no self coupling
         continue;
       }
-      
 
       double d = ps.distance(ps.particle_array[i], ps.particle_array[j]);
 
@@ -147,13 +146,13 @@ void ParSim::Physics::Force_PP_PBC(ParSim::ParticleSystem &ps) {
     ps.particle_array[i].force_radial[0] +=
         -1 * (this->parameters[5]) * ps.particle_array[i].vx +
         ps.particle_array[i].vx_activity +
-        (this->parameters[10] / (this->parameters[5] + this->parameters[6])) *
+        this->parameters[10] * (this->parameters[5]) *
             cos(ps.particle_array[i].theta);
 
     ps.particle_array[i].force_radial[1] +=
         -1 * (this->parameters[5]) * ps.particle_array[i].vy +
         ps.particle_array[i].vy_activity +
-        (this->parameters[10] / (this->parameters[5] + this->parameters[6])) *
+        this->parameters[10] * (this->parameters[5]) *
             sin(ps.particle_array[i].theta);
 
     ps.particle_array[i].torque +=
@@ -165,7 +164,6 @@ void ParSim::Physics::Force_PP_PBC(ParSim::ParticleSystem &ps) {
       if (j == i) { // no self coupling
         continue;
       }
-
 
       // distance from nearest image of jth particle
       double d =
@@ -331,7 +329,8 @@ void ParSim::Physics::ERM_Integrator1(ParSim::Particle &par, int step) {
                (this->parameters[8] / 2); // rotational diffusion
 }
 
-void ParSim::Physics::ERM_Integrator2(ParSim::Particle &par, double L, int step) {
+void ParSim::Physics::ERM_Integrator2(ParSim::Particle &par, double L,
+                                      int step) {
 
   double Fx;
   double Fy;
@@ -397,7 +396,7 @@ void ParSim::Physics::evolve_system(ParticleSystem &parsym, int step) {
 
   // 1)Force-linking--------
   ParSim::Physics::Force_PP(parsym); // links forces on each object
-                                          // at this stage
+                                     // at this stage
   // 2)Integrating----------
   ParSim::Physics::Integrator(
       parsym, step); // applies forces on each object as determined above
