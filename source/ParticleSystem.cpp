@@ -104,7 +104,7 @@ void ParSim::Particle::Lattice_initialize(int N, double phi, double L) {
   vx_activity = 0 * vx_dist(rd);
   vy_activity = 0 * vy_dist(rd);
 
-  // Generate random theta
+  // Generate random theta -- active velocity director
   theta = 2 * M_PI * theta_dist(rd);
 
   // Generatoe random omega0
