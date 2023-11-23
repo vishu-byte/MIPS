@@ -90,6 +90,7 @@ int main() {
 
   log << "-x-x-x-x-x-Simulation initiated-x-x-x-x-x- " << std::endl;
   std::cout << "-x-x-x-x-x-Simulation initiated-x-x-x-x-x- " << std::endl;
+  std::cout <<"No. of time steps: " << Number_of_time_steps << std:: endl;
 
   time_t start = time(&start); // for measuring total runtime
 
