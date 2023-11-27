@@ -25,8 +25,9 @@ int main() {
 
   // Mips parameters
   double phi = 0.5; // packing fraction
-  double L = sqrt(M_PI * Number_of_particles / (phi));   //periodic boundary length
-  double Pecr = 50; // rotational Peclet number
+  double L =
+      sqrt(M_PI * Number_of_particles / (phi)); // periodic boundary length
+  double Pecr = 50;                             // rotational Peclet number
 
   ParSim::ParticleSystem parsym(Number_of_particles, phi,
                                 L); // create a simple system
@@ -45,9 +46,12 @@ int main() {
   physics.parameters[11] =
       physics.parameters[10] / Pecr; // Dr  -- rotational diffusion
 
+  physics.parameters[4] = 0.8; // mu
+
+
   /*---obsolete params---*/
-  physics.parameters[4] = 0.0; // mu
-  physics.parameters[3] = 1;   // radius
+
+  physics.parameters[3] = 1; // radius
 
   physics.parameters[6] = 0.00000001;      // epsilon1  -- softening length
   physics.parameters[7] = M_PI / 10000000; // epsilon2 -- softening omega
@@ -90,7 +94,7 @@ int main() {
 
   log << "-x-x-x-x-x-Simulation initiated-x-x-x-x-x- " << std::endl;
   std::cout << "-x-x-x-x-x-Simulation initiated-x-x-x-x-x- " << std::endl;
-  std::cout <<"No. of time steps: " << Number_of_time_steps << std:: endl;
+  std::cout << "No. of time steps: " << Number_of_time_steps << std::endl;
 
   time_t start = time(&start); // for measuring total runtime
 

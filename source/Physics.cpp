@@ -157,7 +157,7 @@ void ParSim::Physics::Force_PP_PBC(ParSim::ParticleSystem &ps) {
 
     ps.particle_array[i].torque +=
         -1 * (this->parameters[5]) * ps.particle_array[i].omega +
-        ps.particle_array[i].omega_activity;
+        (ps.particle_array[i].omega_activity*(this->parameters[5]));
 
     // Nnary force calculation --- Loop2: through all particles
     for (int j = 0; j < ps.no_of_particles; ++j) {
