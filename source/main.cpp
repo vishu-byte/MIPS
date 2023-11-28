@@ -162,7 +162,9 @@ void state_before_simulation(std::ofstream &log, ParSim::ParticleSystem &parsym,
       << "Mass (m): " << physics.parameters[2] << std::endl
       << "gamma: " << physics.parameters[5] << std::endl
       << "VO: " << physics.parameters[10] << std::endl
-      << "Dr: " << physics.parameters[11] << std::endl;
+      << "Dr: " << physics.parameters[11] << std::endl
+      << "mu: " << physics.parameters[4] << std::endl;
+
 
   log << "Energy-momentum before the collision: " << std::endl;
   log << "Total Energy: "
