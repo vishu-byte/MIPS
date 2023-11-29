@@ -155,7 +155,7 @@ void ParSim::Physics::Force_PP_PBC(ParSim::ParticleSystem &ps) {
     }
 
     if (abs(yp) > ps.L / 2) {
-      double norm = 2 * (abs(yp) - (ps.L / 2));
+      double norm = 2 * (abs(yp) - (ps.L / 2));     //kwall = 2
       force_wall_y =
           -norm * ps.particle_array[i].y / (abs(ps.particle_array[i].y));
 
@@ -183,7 +183,7 @@ void ParSim::Physics::Force_PP_PBC(ParSim::ParticleSystem &ps) {
     } else {
       force_wall_y = 0.0;
       force_wall_fric_x = 0.0;
-      torque_wall = 0;
+      torque_wall = 0.0;
     }
 
     // Unary forces.
@@ -192,7 +192,7 @@ void ParSim::Physics::Force_PP_PBC(ParSim::ParticleSystem &ps) {
         -1 * (this->parameters[5]) * ps.particle_array[i].vx +
         ps.particle_array[i].vx_activity +
         this->parameters[10] * (this->parameters[5]) *
-            cos(ps.particle_array[i].theta);
+            cos(ps.particle_array[i].theta)+ force_wall_fric_x;
 
     ps.particle_array[i].force_radial[1] +=
         -1 * (this->parameters[5]) * ps.particle_array[i].vy +
