@@ -21,7 +21,7 @@ int main() {
   /*Parameters*/
   /*Try to stick to S.I units to make sense out of numbers*/
   int Number_of_particles = 784;
-  int Number_of_time_steps = 200000;
+  int Number_of_time_steps = 2000;
 
   // Mips parameters
   double phi = 0.5; // packing fraction
@@ -104,7 +104,7 @@ int main() {
     // writing data of this state to file (will be used for rendering the
     // system in ovito), write every nth state
 
-    if (step % 100 == 0) {
+    if (step % 10 == 0) {
       data_output << Number_of_particles << std::endl;
       data_output << "Lattice="
                   << "\"10.0 0.0 0.0 0.0 10.0 0.0 0.0 0.0 0.0\"" << std::endl;

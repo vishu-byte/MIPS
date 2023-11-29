@@ -141,14 +141,49 @@ void ParSim::Physics::Force_PP_PBC(ParSim::ParticleSystem &ps) {
     ps.particle_array[i].force_tangential[1] = 0;
     ps.particle_array[i].torque = 0;
 
-    // wall forces
+    // wall forces and torque
     double force_wall_y = 0.0;
+    double force_wall_fric_x = 0.0;
+    double torque_wall = 0.0;
+    double yp = 0.0;
 
-    if (abs(ps.particle_array[i].y) > ps.L / 2) {
-      force_wall_y = -2 * pow((abs(ps.particle_array[i].y) - (ps.L / 2)), 2) *
-                     ps.particle_array[i].y / (abs(ps.particle_array[i].y));
+    if (ps.particle_array[i].y > 0) {
+      yp = ps.particle_array[i].y + (this->parameters[1] / 2);
+
+    } else {
+      yp = ps.particle_array[i].y - (this->parameters[1] / 2);
+    }
+
+    if (abs(yp) > ps.L / 2) {
+      double norm = 2 * (abs(yp) - (ps.L / 2));
+      force_wall_y =
+          -norm * ps.particle_array[i].y / (abs(ps.particle_array[i].y));
+
+      force_wall_fric_x =
+          -this->parameters[4] * abs(norm) *
+          (ps.particle_array[i].omega /
+           (abs(ps.particle_array[i].omega + (this->parameters[7])))) *
+          (-(ps.particle_array[i].y) / abs(ps.particle_array[i].y));
+
+      if (ps.particle_array[i].y > 0) {
+        torque_wall =
+            -this->parameters[4] * abs(norm) *
+            (ps.particle_array[i].omega /
+             (abs(ps.particle_array[i].omega + (this->parameters[7])))) *
+            (abs((ps.L / 2) - (ps.particle_array[i].y)));
+
+      } else {
+        torque_wall =
+            -this->parameters[4] * abs(norm) *
+            (ps.particle_array[i].omega /
+             (abs(ps.particle_array[i].omega + (this->parameters[7])))) *
+            (abs((ps.L / 2) + (ps.particle_array[i].y)));
+      }
+
     } else {
       force_wall_y = 0.0;
+      force_wall_fric_x = 0.0;
+      torque_wall = 0;
     }
 
     // Unary forces.
@@ -168,7 +203,8 @@ void ParSim::Physics::Force_PP_PBC(ParSim::ParticleSystem &ps) {
 
     ps.particle_array[i].torque +=
         -1 * (this->parameters[5]) * ps.particle_array[i].omega +
-        (ps.particle_array[i].omega_activity * (this->parameters[5]));
+        (ps.particle_array[i].omega_activity * (this->parameters[5])) +
+        torque_wall;
 
     // Nnary force calculation --- Loop2: through all particles
     for (int j = 0; j < ps.no_of_particles; ++j) {
