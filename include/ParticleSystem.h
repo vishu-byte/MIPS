@@ -61,7 +61,7 @@ public:
   std::vector<double> lattice_grid{0, 0};
   Particle *particle_array{nullptr}; // creating particle array on heap
 
-  ParticleSystem(int, double, double);              // constructor
+  ParticleSystem(int, double, double);      // constructor
   ParticleSystem(int, int, double, double); // parameterized constructor
   virtual ~ParticleSystem();                // destructor
   Particle *const get_particles(); // constant pointer, can not change address
@@ -71,6 +71,8 @@ public:
   double min_sep(double x1, double x2);
 
   double nearest_img_dist(Particle par1, Particle par2);
+
+  double nearest_img_dist_wall_y(Particle par1, Particle par2);
 };
 
 class Boxresize {
