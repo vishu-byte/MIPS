@@ -141,6 +141,20 @@ void ParSim::Physics::Force_PP_PBC(ParSim::ParticleSystem &ps) {
     ps.particle_array[i].force_tangential[1] = 0;
     ps.particle_array[i].torque = 0;
 
+
+     // wall forces
+    double force_wall_y = 0.0;
+
+    if (abs(ps.particle_array[i].y) > ps.L / 2) {
+      force_wall_y = -2 *
+                     pow((abs(ps.particle_array[i].y) - (ps.L / 2)), 2) *
+                     ps.particle_array[i].y /
+                     (abs(ps.particle_array[i].y));
+    } else {
+      force_wall_y = 0.0;
+    }
+
+
     // Unary forces.
 
     ps.particle_array[i].force_radial[0] +=
@@ -153,7 +167,7 @@ void ParSim::Physics::Force_PP_PBC(ParSim::ParticleSystem &ps) {
         -1 * (this->parameters[5]) * ps.particle_array[i].vy +
         ps.particle_array[i].vy_activity +
         this->parameters[10] * (this->parameters[5]) *
-            sin(ps.particle_array[i].theta);
+            sin(ps.particle_array[i].theta) + force_wall_y;
 
     ps.particle_array[i].torque +=
         -1 * (this->parameters[5]) * ps.particle_array[i].omega +
@@ -167,7 +181,7 @@ void ParSim::Physics::Force_PP_PBC(ParSim::ParticleSystem &ps) {
 
       // distance from nearest image of jth particle
       double d =
-          ps.nearest_img_dist(ps.particle_array[i], ps.particle_array[j]);
+          ps.nearest_img_dist_wall_y(ps.particle_array[i], ps.particle_array[j]);
 
       // U
 
@@ -179,7 +193,7 @@ void ParSim::Physics::Force_PP_PBC(ParSim::ParticleSystem &ps) {
         // radial interaction force
 
         double dx = ps.min_sep(ps.particle_array[i].x, ps.particle_array[j].x);
-        double dy = ps.min_sep(ps.particle_array[i].y, ps.particle_array[j].y);
+        double dy = ps.particle_array[i].y - ps.particle_array[j].y;
 
         ps.particle_array[i].force_radial[0] +=
             N * (dx) / (d + (this->parameters[6]));
@@ -370,11 +384,11 @@ void ParSim::Physics::ERM_Integrator2(ParSim::Particle &par, double L,
     par.x += L;
   }
 
-  if (par.y > L / 2) {
-    par.y -= L;
-  } else if (par.y < -L / 2) {
-    par.y += L;
-  }
+  // if (par.y > L / 2) {
+  //   par.y -= L;
+  // } else if (par.y < -L / 2) {
+  //   par.y += L;
+  // }
 }
 
 void ParSim ::Physics::Integrator(ParSim::ParticleSystem &parsym, int step) {
