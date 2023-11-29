@@ -21,10 +21,10 @@ int main() {
   /*Parameters*/
   /*Try to stick to S.I units to make sense out of numbers*/
   int Number_of_particles = 784;
-  int Number_of_time_steps = 2000;
+  int Number_of_time_steps = 10000;
 
   // Mips parameters
-  double phi = 0.5; // packing fraction
+  double phi = 0.50; // packing fraction
   double L =
       sqrt(M_PI * Number_of_particles / (phi)); // periodic boundary length
   double Pecr = 50;                             // rotational Peclet number
