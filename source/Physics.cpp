@@ -141,19 +141,15 @@ void ParSim::Physics::Force_PP_PBC(ParSim::ParticleSystem &ps) {
     ps.particle_array[i].force_tangential[1] = 0;
     ps.particle_array[i].torque = 0;
 
-
-     // wall forces
+    // wall forces
     double force_wall_y = 0.0;
 
     if (abs(ps.particle_array[i].y) > ps.L / 2) {
-      force_wall_y = -2 *
-                     pow((abs(ps.particle_array[i].y) - (ps.L / 2)), 2) *
-                     ps.particle_array[i].y /
-                     (abs(ps.particle_array[i].y));
+      force_wall_y = -2 * pow((abs(ps.particle_array[i].y) - (ps.L / 2)), 2) *
+                     ps.particle_array[i].y / (abs(ps.particle_array[i].y));
     } else {
       force_wall_y = 0.0;
     }
-
 
     // Unary forces.
 
@@ -166,12 +162,13 @@ void ParSim::Physics::Force_PP_PBC(ParSim::ParticleSystem &ps) {
     ps.particle_array[i].force_radial[1] +=
         -1 * (this->parameters[5]) * ps.particle_array[i].vy +
         ps.particle_array[i].vy_activity +
-        this->parameters[10] * (this->parameters[5]) *
-            sin(ps.particle_array[i].theta) + force_wall_y;
+        (this->parameters[10] * (this->parameters[5]) *
+         sin(ps.particle_array[i].theta)) +
+        force_wall_y;
 
     ps.particle_array[i].torque +=
         -1 * (this->parameters[5]) * ps.particle_array[i].omega +
-        (ps.particle_array[i].omega_activity*(this->parameters[5]));
+        (ps.particle_array[i].omega_activity * (this->parameters[5]));
 
     // Nnary force calculation --- Loop2: through all particles
     for (int j = 0; j < ps.no_of_particles; ++j) {
@@ -180,8 +177,8 @@ void ParSim::Physics::Force_PP_PBC(ParSim::ParticleSystem &ps) {
       }
 
       // distance from nearest image of jth particle
-      double d =
-          ps.nearest_img_dist_wall_y(ps.particle_array[i], ps.particle_array[j]);
+      double d = ps.nearest_img_dist_wall_y(ps.particle_array[i],
+                                            ps.particle_array[j]);
 
       // U
 
