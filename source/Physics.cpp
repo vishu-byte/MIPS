@@ -155,7 +155,7 @@ void ParSim::Physics::Force_PP_PBC(ParSim::ParticleSystem &ps) {
     }
 
     if (abs(yp) > ps.L / 2) {
-      double norm = 2 * (abs(yp) - (ps.L / 2));     //kwall = 2
+      double norm = 2 * (abs(yp) - (ps.L / 2)); // kwall = 2
       force_wall_y =
           -norm * ps.particle_array[i].y / (abs(ps.particle_array[i].y));
 
@@ -192,7 +192,8 @@ void ParSim::Physics::Force_PP_PBC(ParSim::ParticleSystem &ps) {
         -1 * (this->parameters[5]) * ps.particle_array[i].vx +
         ps.particle_array[i].vx_activity +
         this->parameters[10] * (this->parameters[5]) *
-            cos(ps.particle_array[i].theta)+ force_wall_fric_x;
+            cos(ps.particle_array[i].theta) +
+        force_wall_fric_x;
 
     ps.particle_array[i].force_radial[1] +=
         -1 * (this->parameters[5]) * ps.particle_array[i].vy +
@@ -424,6 +425,123 @@ void ParSim::Physics::ERM_Integrator2(ParSim::Particle &par, double L,
   // }
 }
 
+void ParSim::Physics::ERM_Integrator1_sys(ParSim::ParticleSystem &parsym,
+                                          int step) {
+
+  double Fx = 0.0;
+  double Fy = 0.0;
+  double Tau = 0.0;
+  for (int i = 0; i < parsym.no_of_particles; ++i) {
+
+    // Total force and torque on this ith particle
+    Fx = parsym.particle_array[i].force_radial[0] +
+         parsym.particle_array[i].force_tangential[0];
+    Fy = parsym.particle_array[i].force_radial[1] +
+         parsym.particle_array[i].force_tangential[1]; //
+
+    Tau = parsym.particle_array[i].torque;
+
+    // Save present attributes
+    parsym.particle_array[i].position_prev[0] = parsym.particle_array[i].x;
+    parsym.particle_array[i].position_prev[1] = parsym.particle_array[i].y;
+
+    parsym.particle_array[i].velocity_prev[0] = parsym.particle_array[i].vx;
+    parsym.particle_array[i].velocity_prev[1] = parsym.particle_array[i].vy;
+
+    parsym.particle_array[i].alpha_prev = parsym.particle_array[i].alpha;
+    parsym.particle_array[i].omega_prev = parsym.particle_array[i].omega;
+
+    // update the attributes upto midpoint (x', v')
+
+    parsym.particle_array[i].x +=
+        parsym.particle_array[i].vx * (this->parameters[8]) / 2; // x'
+    parsym.particle_array[i].y +=
+        parsym.particle_array[i].vy * (this->parameters[8]) / 2;
+    parsym.particle_array[i].vx +=
+        (Fx / (this->parameters[2])) * (this->parameters[8]) / 2; // v'
+    parsym.particle_array[i].vy +=
+        (Fy / (this->parameters[2])) * (this->parameters[8]) / 2;
+
+    parsym.particle_array[i].alpha +=
+        parsym.particle_array[i].omega * (this->parameters[8]) / 2;
+    parsym.particle_array[i].omega +=
+        (Tau / (this->parameters[2])) * (this->parameters[8]) / 2;
+
+    // For random active force -- use Fundamental Euler integration to update by
+    // half step
+    std::mt19937 mt(this->generator());
+    std::normal_distribution<double> distribution(0.0, 1.0);
+
+    parsym.particle_array[i].theta +=
+        pow(this->parameters[11], 0.5) * distribution(mt) *
+        (this->parameters[8] / 2); // rotational diffusion
+  }
+}
+
+void ParSim::Physics::ERM_Integrator2_sys(ParSim::ParticleSystem &parsym,
+                                          int step) {
+
+  double Fx = 0.0;
+  double Fy = 0.0;
+  double Tau = 0.0;
+
+  for (int i = 0; i < parsym.no_of_particles; ++i) {
+
+    // Total force and torque on this ith particle
+    Fx = parsym.particle_array[i].force_radial[0] +
+         parsym.particle_array[i].force_tangential[0];
+    Fy = parsym.particle_array[i].force_radial[1] +
+         parsym.particle_array[i].force_tangential[1]; //
+
+    Tau = parsym.particle_array[i].torque;
+
+    // update the attributes to next time step (x1,v1)
+
+    parsym.particle_array[i].x =
+        parsym.particle_array[i].position_prev[0] +
+        parsym.particle_array[i].vx * (this->parameters[8]); // x1
+    parsym.particle_array[i].y =
+        parsym.particle_array[i].position_prev[1] +
+        parsym.particle_array[i].vy * (this->parameters[8]);
+    parsym.particle_array[i].vx =
+        parsym.particle_array[i].velocity_prev[0] +
+        (Fx / (this->parameters[2])) * (this->parameters[8]); // v1
+    parsym.particle_array[i].vy =
+        parsym.particle_array[i].velocity_prev[1] +
+        (Fy / (this->parameters[2])) * (this->parameters[8]);
+
+    parsym.particle_array[i].alpha =
+        parsym.particle_array[i].alpha_prev +
+        parsym.particle_array[i].omega * (this->parameters[8]);
+    parsym.particle_array[i].omega =
+        parsym.particle_array[i].omega_prev +
+        (Tau / (this->parameters[2])) * (this->parameters[8]);
+
+    // For random active force -- use Fundamental Euler integration to update by
+    // half step
+    std::mt19937 mt(this->generator());
+    std::normal_distribution<double> distribution(0.0, 1.0);
+
+    parsym.particle_array[i].theta +=
+        pow(this->parameters[11], 0.5) * distribution(mt) *
+        (this->parameters[8] / 2); // rotational diffusion
+
+    // Periodic boudary condition
+
+    if (parsym.particle_array[i].x > parsym.L / 2) {
+      parsym.particle_array[i].x -= parsym.L;
+    } else if (parsym.particle_array[i].x < -parsym.L / 2) {
+      parsym.particle_array[i].x += parsym.L;
+    }
+
+    // if (par.y > L / 2) {
+    //   par.y -= L;
+    // } else if (par.y < -L / 2) {
+    //   par.y += L;
+    // }
+  }
+}
+
 void ParSim ::Physics::Integrator(ParSim::ParticleSystem &parsym, int step) {
 
   for (int i = 0; i < parsym.no_of_particles; ++i) {
@@ -455,17 +573,13 @@ void ParSim::Physics::evolve_system_ERM(ParticleSystem &parsym, int step) {
   Force_PP_PBC(parsym); // links forces on each object
 
   // ii) Update x,v to x', v'  ----
-  for (int i = 0; i < parsym.no_of_particles; ++i) {
-    ERM_Integrator1(parsym.particle_array[i], step);
-  }
+  ERM_Integrator1_sys(parsym, step);
 
   // iii) Again calculate force (F') from x',v' ------
   Force_PP_PBC(parsym);
 
   //  iv) Update x',v' to xnew, vnew --------
-  for (int i = 0; i < parsym.no_of_particles; ++i) {
-    ERM_Integrator2(parsym.particle_array[i], parsym.L, step);
-  }
+  ERM_Integrator2_sys(parsym, step);
 }
 
 std::vector<double> ParSim::Physics::EnergyMomentum(ParticleSystem &parsym) {

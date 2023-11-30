@@ -35,6 +35,8 @@ public:
   void Vel_Verlet_Integrator(Particle &, int);
   void ERM_Integrator1(Particle &, int);
   void ERM_Integrator2(Particle &, double, int);
+  void ERM_Integrator1_sys(ParticleSystem &, int);
+  void ERM_Integrator2_sys(ParticleSystem &, int);
 
   /*Conserved quantities*/
   std::vector<double> EnergyMomentum(ParticleSystem &);

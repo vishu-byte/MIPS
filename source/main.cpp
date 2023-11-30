@@ -20,8 +20,8 @@ int main() {
 
   /*Parameters*/
   /*Try to stick to S.I units to make sense out of numbers*/
-  int Number_of_particles = 784;
-  int Number_of_time_steps = 200000;
+  int Number_of_particles = 100;
+  int Number_of_time_steps = 2000;
 
   // Mips parameters
   double phi = 0.50; // packing fraction
