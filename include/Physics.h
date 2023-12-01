@@ -30,6 +30,7 @@ public:
   /*Force linker + integrators-- */
   void Force_PP(ParticleSystem &);        // Main force linker
   void Force_PP_PBC(ParticleSystem &);    // Main force linker
+  void Force_PP_CRB(ParticleSystem &);    // Main force linker
   void Integrator(ParticleSystem &, int); // Main integrator
   void Euler_Integrator(Particle &, int);
   void Vel_Verlet_Integrator(Particle &, int);
@@ -41,12 +42,11 @@ public:
   /*Conserved quantities*/
   std::vector<double> EnergyMomentum(ParticleSystem &);
 
-  void evolve_system(ParticleSystem &, int); // takes a particle system and moves
-                                           // it forward in time
+  void evolve_system(ParticleSystem &, int); // takes a particle system and
+                                             // moves it forward in time
 
   void evolve_system_ERM(ParticleSystem &, int);
 };
-
 
 } // namespace ParSim
 

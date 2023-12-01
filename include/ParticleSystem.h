@@ -73,6 +73,8 @@ public:
   double nearest_img_dist(Particle par1, Particle par2);
 
   double nearest_img_dist_wall_y(Particle par1, Particle par2);
+
+  double dist_from_origin(Particle par);
 };
 
 class Boxresize {

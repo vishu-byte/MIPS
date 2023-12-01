@@ -271,6 +271,164 @@ void ParSim::Physics::Force_PP_PBC(ParSim::ParticleSystem &ps) {
   }
 }
 
+void ParSim::Physics::Force_PP_CRB(ParSim::ParticleSystem &ps) {
+
+  // Loop1: through all particles
+  for (int i = 0; i < ps.no_of_particles; ++i) {
+
+    // Store previous step forces
+    ps.particle_array[i].force_radial_prev[0] =
+        ps.particle_array[i].force_radial[0];
+    ps.particle_array[i].force_radial_prev[1] =
+        ps.particle_array[i].force_radial[1];
+    ps.particle_array[i].force_tangential_prev[0] =
+        ps.particle_array[i].force_tangential[0];
+    ps.particle_array[i].force_tangential_prev[1] =
+        ps.particle_array[i].force_tangential[1];
+    ps.particle_array[i].torque_prev = ps.particle_array[i].torque;
+
+    // Reset the current forces
+    ps.particle_array[i].force_radial[0] = 0;
+    ps.particle_array[i].force_radial[1] = 0;
+    ps.particle_array[i].force_tangential[0] = 0;
+    ps.particle_array[i].force_tangential[1] = 0;
+    ps.particle_array[i].torque = 0;
+
+    // wall forces -----------------
+    double force_wall_x = 0.0;
+    double force_wall_y = 0.0;
+
+    double force_wall_fric_x = 0.0;
+    double force_wall_fric_y = 0.0;
+
+    double torque_wall = 0.0;
+
+    double rp = 0.0;
+
+    double magnitude = 0.0;
+
+    rp = ps.dist_from_origin(ps.particle_array[i]) +
+         this->parameters[1]; // calculates position vector magnitude + sigma
+
+    double norm = 2 * ((ps.L / 2) - rp);
+
+    if (rp > ps.L / 2) {
+      force_wall_x = norm * ps.particle_array[i].x / (rp - this->parameters[1]);
+
+      force_wall_fric_x =
+          -(this->parameters[4]) * abs(norm) *
+          (ps.particle_array[i].omega /
+           (abs(ps.particle_array[i].omega + (this->parameters[7])))) *
+          (-(ps.particle_array[i].y) / (rp - this->parameters[1]));
+
+    } else {
+      force_wall_x = 0.0;
+      force_wall_fric_x = 0.0;
+    }
+
+    if (rp > ps.L / 2) {
+      force_wall_y = norm * ps.particle_array[i].y / (rp - this->parameters[1]);
+
+      force_wall_fric_y =
+          -(this->parameters[4]) * abs(norm) *
+          (ps.particle_array[i].omega /
+           (abs(ps.particle_array[i].omega + (this->parameters[7])))) *
+          ((ps.particle_array[i].x) / (rp - this->parameters[1]));
+    } else {
+      force_wall_y = 0.0;
+      force_wall_fric_y = 0.0;
+    }
+
+    // wall torque
+
+    if (rp > ps.L / 2) {
+      torque_wall =
+          -(this->parameters[4]) * abs(norm) *
+          (ps.particle_array[i].omega /
+           (abs(ps.particle_array[i].omega + (this->parameters[7])))) *
+          ((ps.L / 2) - (rp - this->parameters[1]));
+
+    } else {
+      torque_wall = 0.0;
+    }
+
+    // Unary force of damping. Always there. Translational and Rotational
+    // activities added.
+
+    ps.particle_array[i].force_radial[0] +=
+        -1 * (this->parameters[5]) * ps.particle_array[i].vx +
+        ps.particle_array[i].vx_activity + force_wall_x + force_wall_fric_x;
+
+    ps.particle_array[i].force_radial[1] +=
+        -1 * (this->parameters[5]) * ps.particle_array[i].vy +
+        ps.particle_array[i].vy_activity + force_wall_y + force_wall_fric_y;
+
+    ps.particle_array[i].torque +=
+        -1 * (this->parameters[5]) * ps.particle_array[i].omega +
+        ps.particle_array[i].omega_activity + torque_wall;
+
+    // Knary force calculation --- Loop2: through all particles
+    for (int j = 0; j < ps.no_of_particles; ++j) {
+      if (j == i) { // no self coupling
+        continue;
+      }
+
+      double d = ps.distance(ps.particle_array[i], ps.particle_array[j]);
+
+      // U
+
+      if (d <= (this->parameters[1])) {
+        // mag. of radial force
+        double N = (this->parameters[0]) *
+                   ((this->parameters[1]) -
+                    d); // magnitude of radial force used as normal reaction
+        // radial interaction force
+        ps.particle_array[i].force_radial[0] +=
+            N * (ps.particle_array[i].x - ps.particle_array[j].x) /
+            (d + (this->parameters[6]));
+
+        ps.particle_array[i].force_radial[1] +=
+            N * (ps.particle_array[i].y - ps.particle_array[j].y) /
+            (d + (this->parameters[6]));
+
+        // tangential friction force
+        double omega_sum =
+            (ps.particle_array[i].omega + ps.particle_array[j].omega);
+
+        ps.particle_array[i].force_tangential[0] +=
+            -(this->parameters[4]) *
+            ((this->parameters[0]) * ((this->parameters[1]) - d)) *
+            (omega_sum / (abs(omega_sum + (this->parameters[7])))) *
+            ((ps.particle_array[i].y - ps.particle_array[j].y) /
+             (d + (this->parameters[6])));
+
+        ps.particle_array[i].force_tangential[1] +=
+            -(this->parameters[4]) *
+            ((this->parameters[0]) * ((this->parameters[1]) - d)) *
+            (omega_sum / (abs(omega_sum + (this->parameters[7])))) *
+            (-(ps.particle_array[i].x - ps.particle_array[j].x) /
+             (d + (this->parameters[6])));
+
+        // torque on particle
+
+        if (omega_sum != 0) {
+          ps.particle_array[i].torque +=
+              -(this->parameters[4]) *
+              ((this->parameters[0]) * ((this->parameters[1]) - d)) *
+              (omega_sum / (abs(omega_sum + (this->parameters[7])))) * d;
+        }
+
+        if (omega_sum == 0) {
+          ps.particle_array[i].torque +=
+              -(this->parameters[4]) *
+              ((this->parameters[0]) * ((this->parameters[1]) - d)) *
+              (omega_sum / (abs(omega_sum + (this->parameters[7])))) * d;
+        }
+      }
+    }
+  }
+}
+
 void ParSim::Physics::Euler_Integrator(ParSim::Particle &par, int step) {
 
   double m = this->parameters[2];

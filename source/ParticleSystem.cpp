@@ -70,8 +70,9 @@ void ParSim::Particle::Lattice_initialize(int N, double phi, double L) {
   // std:: cout << "Random init called with: (N,phi,L)" << N<< " "<<phi <<" " <<
   // L << std::endl;
 
-  double spacing = (L - 2.2)/std::sqrt(N);            //2.2 should be replaced with 1.1xsigma
-  static double x_cor = 0; // executed only once
+  double spacing =
+      (L - 2.2) / std::sqrt(N); // 2.2 should be replaced with 1.1xsigma
+  static double x_cor = 0;      // executed only once
   static double y_cor = 0;
   std::random_device rd;
   std::uniform_real_distribution<double> vx_dist(-1, 1);
@@ -108,7 +109,7 @@ void ParSim::Particle::Lattice_initialize(int N, double phi, double L) {
   theta = 2 * M_PI * theta_dist(rd);
 
   // Generate random omega0
-  omega_activity = (2*M_PI/628.0);   //0.01--anticlockwise rotation
+  omega_activity = (2 * M_PI / 628.0); // 0.01--anticlockwise rotation
 
   x_cor = (x_cor + 1);
 }
@@ -158,13 +159,18 @@ double ParSim::ParticleSystem::nearest_img_dist(Particle par1, Particle par2) {
   return dist;
 }
 
-
-double ParSim::ParticleSystem::nearest_img_dist_wall_y(Particle par1, Particle par2) {
+double ParSim::ParticleSystem::nearest_img_dist_wall_y(Particle par1,
+                                                       Particle par2) {
 
   double dist;
 
-  dist =
-      pow((pow(min_sep(par1.x, par2.x), 2) + pow(par1.y - par2.y, 2)),0.5);
+  dist = pow((pow(min_sep(par1.x, par2.x), 2) + pow(par1.y - par2.y, 2)), 0.5);
 
   return dist;
+}
+
+double ParSim::ParticleSystem::dist_from_origin(Particle par) {
+  double distance;
+  distance = pow((pow(par.x, 2) + pow(par.y, 2)), 0.5);
+  return distance;
 }
